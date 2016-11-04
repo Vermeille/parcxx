@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cassert>
+#include <utility>
 
 template <class T>
 class optional {
