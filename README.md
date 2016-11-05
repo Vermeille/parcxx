@@ -5,6 +5,8 @@
                      |_| \__,_|_|  \___/_/\_\/_/\_\
 ```
 
+[![Build Status](https://travis-ci.org/Vermeille/parcxx.svg?branch=master)](https://travis-ci.org/Vermeille/parcxx)
+
 ParCXX is a parser combinator library to allow writing parser by composition in
 a declarative style. It's built following the monadic parser pattern.
 
