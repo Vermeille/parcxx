@@ -1,4 +1,3 @@
-CXX=clang++
 CXXFLAGS=-Wall -Wextra -march=native -O3 -Isrc -std=c++14
 
 run_tests: tests/tests
