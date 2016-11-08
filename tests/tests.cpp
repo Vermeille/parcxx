@@ -4,6 +4,7 @@
 #include <functional>
 #include <iostream>
 #include <iterator>
+#include <memory>
 #include <vector>
 
 template <class P>
@@ -19,6 +20,9 @@ void expect_true(P p, const std::string& a, T x) {
     auto res = p(std::begin(a), std::end(a));
     assert(res->first == x);
 }
+
+template <class T>
+void expect_compilation(T) {}
 
 auto parse_csv() {
     auto append_str = [](auto ws, std::string str) {
@@ -61,6 +65,7 @@ int main(int argc, char** argv) {
     expect_true(parse_word("yes", 42), "yes", 42);
     expect_false(parse_word("yes"), "ayes");
     expect_false(parse_word("yes"), "yea");
+    expect_true(parse_word(), "anal ", std::string("anal"));
     expect_true(parse_uint() << parse_char('.'), "12.", 12);
     expect_false(parse_uint() << parse_char('.'), "12");
     expect_false(parse_uint() << parse_char('.'), "12-");
@@ -74,5 +79,44 @@ int main(int argc, char** argv) {
     expect_true(
         list_of(parse_char()), "abcd", std::vector<char>({'a', 'b', 'c', 'd'}));
 
+    expect_compilation(parse_char() %
+                       [](auto) { return std::make_unique<int>(42); });
+
+    expect_compilation((parse_char() % [](auto) {
+                           return std::make_unique<int>(42);
+                       }) >>= [](auto&&) { return parse_char(); });
+
+    expect_compilation((parse_char() % [](auto) -> decltype(auto) {
+                           return std::make_unique<int>(42);
+                       }) >>
+                       parse_char());
+
+    expect_compilation(skipL(parse_char(), (parse_char() % [](auto) {
+                                 return std::make_unique<int>(42);
+                             })));
+
+    expect_compilation(
+        skipL(parse_char() % [](auto) { return std::make_unique<int>(42); },
+              parse_char()));
+
+    expect_compilation(parse_char() << (parse_char() % [](auto&&) {
+                           return std::make_unique<int>(42);
+                       }));
+
+    expect_compilation(parse_char() >> (parse_char() % [](auto&&) {
+                           return std::make_unique<int>(42);
+                       }));
+
+    expect_compilation(parse_char() % [](auto&&) {
+        return std::make_unique<int>(42);
+    } << parse_char());
+
+    expect_compilation(parse_char() % [](auto) {
+        return std::make_unique<int>(42);
+    } >> parse_char());
+
+    auto charptr =
+        parse_char() % [](auto c) { return std::make_unique<char>(c); };
+    expect_compilation(charptr & charptr);
     return 0;
 }

@@ -3,13 +3,16 @@
 #include <cassert>
 #include <utility>
 
+#include <iostream>
+
 template <class T>
 class optional {
     T val_;
     bool present_;
 
    public:
-    optional(T&& x) : val_(x), present_(true) {}
+    optional(const T& x) : val_(x), present_(true) {}
+    optional(T&& x) : val_(std::move(x)), present_(true) {}
     optional() : present_(false) {}
 
     operator bool() const { return present_; }
@@ -48,16 +51,10 @@ class optional {
         }
     }
 
+    optional GetNone() const { return optional(); }
     optional& operator=(optional&& o) = default;
     optional(optional&&) = default;
     optional(const optional&) = default;
-};
-
-struct None {
-    template <class T>
-    operator optional<T>() const {
-        return optional<T>();
-    }
 };
 
 template <class T, class F>
@@ -73,5 +70,3 @@ template <class T>
 optional<T> make_optional(T x) {
     return optional<T>(std::forward<T>(x));
 }
-
-extern const None none;

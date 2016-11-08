@@ -2,6 +2,8 @@
 
 #include "combinators.h"
 
+#include <functional>
+
 auto parse_digit() {
     return parser_pred(parse_char(), isdigit) %
                [](char c) -> int { return c - '0'; };
