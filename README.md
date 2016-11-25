@@ -38,6 +38,11 @@ function):
 
 Just look at the tests, it should be kinda clear enough.
 
+# Examples
+
+Real world usages:
+[A Synthesizer scripting language](https://github.com/Vermeille/Synth/blob/master/src/parser.hh)
+
 Performance note: I found `clang++ -std=c++14 -O3` to generate very very
 performant code. For instance `parse_uint()`, despite all the crazy lambdas and
 combinators etc, is resolved into a very simple assembly loop very similar to
